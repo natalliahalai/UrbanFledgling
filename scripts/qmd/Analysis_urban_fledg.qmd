@@ -4,7 +4,7 @@ author: Me
 date: today
 toc: true
 abstract-titel: "Our Hypothesis:"
-abstract: "With higher insect abundance and lower noise levels we expect to encounter more fledglings. The variables have an interaction which inluences the fledgling numbers differently"
+abstract: "With higher insect abundance and lower noise levels we expect to encounter more fledglings."
 
 project:
   output-dir: output
@@ -25,6 +25,7 @@ editor_options:
 execute:
   warning: false
   error: false
+  freeze: true
 ---
 
 # Preparing session
@@ -108,14 +109,20 @@ ggarrange(
   
 )
 
+  ggplot(urb_fledg, aes(x=insect_abundance_g_m_2, y=environmental_noise_dB))+
+    geom_point()+
+    geom_smooth(method="lm")+
+    xlab("Insect abundance (g/m^2)")+
+    ylab("noise")
+
 ```
 
 As we can see in the @fig-exp-graph we have a positive correlation between the number of fledglings and the insect abundance and a negative correlation to environmental noise.
 
-
 # Fit the models
 
 ## Fit candidate models
+
 ```{r}
 #| label: tbl-candidate-models
 #| tbl-cap: "Candidate model comparisons"
@@ -129,29 +136,51 @@ knitr::kable(compare_performance(model.00, model.01, model.02, model.03), digits
 
 ```
 
+# Check model diagnostics
 
+```{r}
+#| label: overdispersion-check
+#| 
+#check overdispersion
 
+check_overdispersion(model.02)
+```
 
+No issues with overdispersion.
 
+```{r}
+#| label: fig-diagnostic-model
+#| fig-cap: "Diagnostic plots"
+#| fig-width: !expr 25/2.54
+#| fig-height: !expr 25/2.54
 
+check_model(model.02)
+```
 
+In @fig-diagnostic-model we can see that there appears to be no high collinearity between the variables, the homoscedasticity assumption is also met as well as the Normality (normal residuals distribution) and Linearity. Also we can detect no outliers in the Cook's plot.
 
+## Interpret the chosen model
 
+```{r}
+#| label: intr-model
 
+coef_table<-round(summary(model.02)$coefficients,3)
 
+r.2<-round(attributes(r.squaredLR(model.02))$adj.r.squared,3)
 
+null_chi<-anova(model.00, model.02)
 
+```
 
+```{r}
+#| label: tbl-glm
+#| tbl-cap: !expr paste("Estimates, associated standard errors and statistical significance of the parameters estimated by a poisson GLM", "($R^2$=", r.2, ", $\\chi^2_{(",  null_chi[2,3],",", null_chi[2,1], ")}$=", round(null_chi[2,4],3), ", $p$ =", round(null_chi[2,5], 3), ")")
 
+knitr::kable(coef_table)
 
+```
 
-
-
-
-
-
-
-
+A poisson Generalized Linear Model (*R*^2^= `r r.2` , `r paste("$\\chi^2_{(", null_chi[2,3], ",", null_chi[2,1], ")}$")`= `r round(null_chi[2, 4], 3)` , *p*`r format.pval(null_chi[2, 5], eps= 0.001)`
 
 ```{r}
 
@@ -159,10 +188,3 @@ knitr::kable(compare_performance(model.00, model.01, model.02, model.03), digits
 ggplot(urb_fledg, aes(x=insect_abundance_g_m_2, y=environmental_noise_dB))+
   geom_point(aes(size=number_of_fledglings, color=number_of_fledglings), alpha=.7)
 ```
-
-
-
-
-
-
-
