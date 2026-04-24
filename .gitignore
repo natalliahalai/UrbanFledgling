@@ -1,5 +1,5 @@
 *.png
-!final.png
+*_freeze/
 
 /.quarto/
 **/*.quarto_ipynb
