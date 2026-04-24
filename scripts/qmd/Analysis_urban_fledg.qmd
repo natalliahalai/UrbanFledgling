@@ -25,12 +25,140 @@ editor_options:
 execute:
   warning: false
   error: false
-
 ---
 
+# Preparing session
+
+```{r}
+#| label: preparing the data
+#| output: false
+#| echo: false
+
+# rm(list=ls())
+
+# 0. Load libraries
+
+
+library(ggplot2)
+library(pastecs)
+library(ggpubr); theme_set(theme_bw())
+library(GGally)
+library(performance)
+library(see)
+library(DHARMa)
+library(car)
+library(ggeffects)
+library(MuMIn) #rsquaredLR is from here
+library(knitr)
+library(dplyr)
+library(readr)
+
+# 1. Import and correct data
+urb_fledg <- read_csv(
+  "data/processed/UrbanFledgling.csv",
+  col_types = "dddc"
+)
+
+#remove the 2 faulty rows
+urb_fledg<-urb_fledg%>%
+  filter(is.na(urb_fledg$Comments))
+
+urb_fledg<-urb_fledg%>%
+  select(-Comments)
+
+str(urb_fledg) #insect abundance seems to be a chr
+summary(urb_fledg)
+
+```
+
+## Explore data - Numerically
+
+```{r}
+#| label: exp-numerical
+
+cor_insect_vs_noise<-cor(urb_fledg$insect_abundance_g_m_2, urb_fledg$environmental_noise_dB)
+#strong negative correlation
+
+```
+
+We have a negative correlation of `r round(cor_insect_vs_noise, 2)` which means that there is an interaction between the environmental noise and insect abundance.
+
+## Explore data - Graphically
+
+```{r}
+#| label: fig-exp-graph
+#| fig-cap: "Exploratory plots; a) higher environmental noise (dB) is associated with fewer fledglings; b) higher insect abundance (g/m^2) is associated with a greater number of fledglings."
+#| fig-width: !expr 15/2.54
+#| fig-height: !expr 7/2.54
+
+ggarrange(
+  ggplot(urb_fledg, aes(x=environmental_noise_dB, y=number_of_fledglings))+
+    geom_point()+
+    geom_smooth(method="lm")+
+    xlab("Enrironmental noise (dB)")+
+    ylab("Number of fledglings")
+  ,
+  
+  ggplot(urb_fledg, aes(x=insect_abundance_g_m_2, y=number_of_fledglings))+
+    geom_point()+
+    geom_smooth(method="lm")+
+    xlab("Insect abundance (g/m^2)")+
+    ylab("Number of fledglings"),
+  common.legend = TRUE, labels=c("a)", "b)")
+  
+)
+
+```
+
+As we can see in the @fig-exp-graph we have a positive correlation between the number of fledglings and the insect abundance and a negative correlation to environmental noise.
+
+
+# Fit the models
+
+## Fit candidate models
+```{r}
+#| label: tbl-candidate-models
+#| tbl-cap: "Candidate model comparisons"
+
+model.00<-glm(number_of_fledglings~1, urb_fledg, family=poisson)
+model.01<-glm(number_of_fledglings~insect_abundance_g_m_2, urb_fledg, family=poisson)
+model.02<-glm(number_of_fledglings~insect_abundance_g_m_2+environmental_noise_dB, urb_fledg, family=poisson)
+model.03<-glm(number_of_fledglings~insect_abundance_g_m_2*environmental_noise_dB, urb_fledg, family=poisson)
+
+knitr::kable(compare_performance(model.00, model.01, model.02, model.03), digits=3)
+
+```
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+
+
+ggplot(urb_fledg, aes(x=insect_abundance_g_m_2, y=environmental_noise_dB))+
+  geom_point(aes(size=number_of_fledglings, color=number_of_fledglings), alpha=.7)
+```
 
 
 

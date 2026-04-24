@@ -1,2 +1,5 @@
 *.png
 !final.png
+
+/.quarto/
+**/*.quarto_ipynb
