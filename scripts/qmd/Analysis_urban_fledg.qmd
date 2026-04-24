@@ -1,0 +1,40 @@
+---
+title: "How do environmental stressors and resource availability influence reproductive success of an urban adapring songbird?"
+author: Me
+date: today
+toc: true
+abstract-titel: "Our Hypothesis:"
+abstract: "With higher insect abundance and lower noise levels we expect to encounter more fledglings. The variables have an interaction which inluences the fledgling numbers differently"
+
+project:
+  output-dir: output
+  execute-dir: project
+
+format:
+  html:
+    embed-resources: true
+    number-sections: true
+    code-fold: true
+    comments: 
+      hypothesis: true
+    
+editor: visual
+editor_options:
+  chunk_output_types: console
+
+execute:
+  warning: false
+  error: false
+
+---
+
+
+
+
+
+
+
+
+
+
+
