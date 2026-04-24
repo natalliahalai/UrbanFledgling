@@ -1,16 +1,17 @@
 ---
 title: "How do environmental stressors and resource availability influence reproductive success of an urban adapring songbird?"
-author: Me
+author: Natallia
 date: today
 toc: true
 abstract-titel: "Our Hypothesis:"
-abstract: "- With higher insect abundance and lower noise levels we expect to encounter more fledglings. \n - We expect to see less insect abundance with inccreasing environmental noise"
+abstract: "With higher insect abundance and lower noise levels we expect to encounter more fledglings. \n We expect to see less insect abundance with inccreasing environmental noise"
 
 project:
   output-dir: output
   execute-dir: project
 
 format:
+  # pdf:
   html:
     embed-resources: true
     number-sections: true
@@ -25,7 +26,7 @@ editor_options:
 execute:
   warning: false
   error: false
-  freeze: true
+  # freeze: true
 ---
 
 # Preparing session
@@ -129,7 +130,7 @@ ggplot(urb_fledg, aes(x=insect_abundance_g_m_2, y=environmental_noise_dB))+
   
 ```
 
-Once again we plot it all togheter for completeness in @fig-common-plot.
+Once again we plot it all together for completeness in @fig-common-plot.
 
 # Fit the models
 
@@ -155,7 +156,6 @@ model.04<-glm(insect_abundance_g_m_2~environmental_noise_dB, urb_fledg, family=p
 
 ```{r}
 #| label: overdispersion-check
-#| 
 #check overdispersion
 
 check_overdispersion(model.02)
@@ -206,7 +206,7 @@ ggplot(pred.both, aes(x=x, y=predicted)) +
     size = "Number of fledglings"
   )+
   xlab("Insect abundance (g/m^2)")+
-  ylab("Number of fledgling")
+  ylab("Number of fledglings")
 
 ```
 
